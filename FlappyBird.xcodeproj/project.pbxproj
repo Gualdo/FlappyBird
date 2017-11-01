@@ -17,6 +17,12 @@
 		A3A05E951FAA4CF8008422CB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A3A05E931FAA4CF8008422CB /* LaunchScreen.storyboard */; };
 		A3A05EA01FAA4CF8008422CB /* FlappyBirdTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A05E9F1FAA4CF8008422CB /* FlappyBirdTests.swift */; };
 		A3A05EAB1FAA4CF8008422CB /* FlappyBirdUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A05EAA1FAA4CF8008422CB /* FlappyBirdUITests.swift */; };
+		A3A05EC01FAA4F91008422CB /* cielo.png in Resources */ = {isa = PBXBuildFile; fileRef = A3A05EBA1FAA4F91008422CB /* cielo.png */; };
+		A3A05EC11FAA4F91008422CB /* pajaro1.png in Resources */ = {isa = PBXBuildFile; fileRef = A3A05EBB1FAA4F91008422CB /* pajaro1.png */; };
+		A3A05EC21FAA4F91008422CB /* pajaro2.png in Resources */ = {isa = PBXBuildFile; fileRef = A3A05EBC1FAA4F91008422CB /* pajaro2.png */; };
+		A3A05EC31FAA4F91008422CB /* suelo.png in Resources */ = {isa = PBXBuildFile; fileRef = A3A05EBD1FAA4F91008422CB /* suelo.png */; };
+		A3A05EC41FAA4F91008422CB /* tubo1.png in Resources */ = {isa = PBXBuildFile; fileRef = A3A05EBE1FAA4F91008422CB /* tubo1.png */; };
+		A3A05EC51FAA4F91008422CB /* tubo2.png in Resources */ = {isa = PBXBuildFile; fileRef = A3A05EBF1FAA4F91008422CB /* tubo2.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +59,12 @@
 		A3A05EA61FAA4CF8008422CB /* FlappyBirdUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlappyBirdUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3A05EAA1FAA4CF8008422CB /* FlappyBirdUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlappyBirdUITests.swift; sourceTree = "<group>"; };
 		A3A05EAC1FAA4CF8008422CB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A3A05EBA1FAA4F91008422CB /* cielo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cielo.png; sourceTree = "<group>"; };
+		A3A05EBB1FAA4F91008422CB /* pajaro1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pajaro1.png; sourceTree = "<group>"; };
+		A3A05EBC1FAA4F91008422CB /* pajaro2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pajaro2.png; sourceTree = "<group>"; };
+		A3A05EBD1FAA4F91008422CB /* suelo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = suelo.png; sourceTree = "<group>"; };
+		A3A05EBE1FAA4F91008422CB /* tubo1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tubo1.png; sourceTree = "<group>"; };
+		A3A05EBF1FAA4F91008422CB /* tubo2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tubo2.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,15 +115,16 @@
 		A3A05E831FAA4CF7008422CB /* FlappyBird */ = {
 			isa = PBXGroup;
 			children = (
+				A3A05E881FAA4CF7008422CB /* Actions.sks */,
 				A3A05E841FAA4CF7008422CB /* AppDelegate.swift */,
 				A3A05E861FAA4CF7008422CB /* GameScene.sks */,
-				A3A05E881FAA4CF7008422CB /* Actions.sks */,
 				A3A05E8A1FAA4CF7008422CB /* GameScene.swift */,
 				A3A05E8C1FAA4CF7008422CB /* GameViewController.swift */,
 				A3A05E8E1FAA4CF8008422CB /* Main.storyboard */,
 				A3A05E911FAA4CF8008422CB /* Assets.xcassets */,
 				A3A05E931FAA4CF8008422CB /* LaunchScreen.storyboard */,
-				A3A05E961FAA4CF8008422CB /* Info.plist */,
+				A3A05EB91FAA4F91008422CB /* Imagenes Flappy */,
+				A3A05EB81FAA4F1D008422CB /* Supporting Files */,
 			);
 			path = FlappyBird;
 			sourceTree = "<group>";
@@ -132,6 +145,27 @@
 				A3A05EAC1FAA4CF8008422CB /* Info.plist */,
 			);
 			path = FlappyBirdUITests;
+			sourceTree = "<group>";
+		};
+		A3A05EB81FAA4F1D008422CB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A3A05E961FAA4CF8008422CB /* Info.plist */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A3A05EB91FAA4F91008422CB /* Imagenes Flappy */ = {
+			isa = PBXGroup;
+			children = (
+				A3A05EBA1FAA4F91008422CB /* cielo.png */,
+				A3A05EBB1FAA4F91008422CB /* pajaro1.png */,
+				A3A05EBC1FAA4F91008422CB /* pajaro2.png */,
+				A3A05EBD1FAA4F91008422CB /* suelo.png */,
+				A3A05EBE1FAA4F91008422CB /* tubo1.png */,
+				A3A05EBF1FAA4F91008422CB /* tubo2.png */,
+			);
+			path = "Imagenes Flappy";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,9 +275,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3A05EC01FAA4F91008422CB /* cielo.png in Resources */,
+				A3A05EC31FAA4F91008422CB /* suelo.png in Resources */,
 				A3A05E901FAA4CF8008422CB /* Main.storyboard in Resources */,
+				A3A05EC41FAA4F91008422CB /* tubo1.png in Resources */,
 				A3A05E871FAA4CF7008422CB /* GameScene.sks in Resources */,
+				A3A05EC51FAA4F91008422CB /* tubo2.png in Resources */,
+				A3A05EC11FAA4F91008422CB /* pajaro1.png in Resources */,
 				A3A05E921FAA4CF8008422CB /* Assets.xcassets in Resources */,
+				A3A05EC21FAA4F91008422CB /* pajaro2.png in Resources */,
 				A3A05E951FAA4CF8008422CB /* LaunchScreen.storyboard in Resources */,
 				A3A05E891FAA4CF7008422CB /* Actions.sks in Resources */,
 			);
@@ -440,7 +480,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 273FZ5G5B8;
-				INFOPLIST_FILE = FlappyBird/Info.plist;
+				INFOPLIST_FILE = "FlappyBird/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eduardo.FlappyBird;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -455,7 +495,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 273FZ5G5B8;
-				INFOPLIST_FILE = FlappyBird/Info.plist;
+				INFOPLIST_FILE = "FlappyBird/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eduardo.FlappyBird;
 				PRODUCT_NAME = "$(TARGET_NAME)";
