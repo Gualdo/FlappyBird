@@ -9,7 +9,7 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene
+class GameScene: SKScene, SKPhysicsContactDelegate
 {
     // MARK: - Global Variables
     
@@ -21,12 +21,31 @@ class GameScene: SKScene
     var texturaTubo2 = SKTexture()
     var separacionTubos = 200
     var controlTubos = SKAction()
+    var categoriaPajaro : UInt32 = 1 << 0
+    var categoriaSuelo  : UInt32 = 1 << 1
+    var categoriaTubos  : UInt32 = 1 << 2
+    var categoriaAvance : UInt32 = 1 << 3
+    let movimiento = SKNode()
+    var reset = false
+    let adminTubos = SKNode()
+    var puntuacion = Int()
+    let puntuacionLabel = SKLabelNode()
+    let gravity : CGFloat = -5.0
+    let velocidadDeAleteo : CGFloat = 0.25
+    let posicionXPajaro : CGFloat = 2.75
+    var actualizacionCielo : CGFloat = 0.05
+    var actualizacionSuelo : CGFloat = 0.015
+    var actualizacionConjuntoTubos : CGFloat = 0.01
+    let fontSize : CGFloat = 100
+    let fontAlpha : CGFloat = 0.5
+    let impulsoPajaro : CGFloat = 6.0
     
     // MARK: - GameScene Load
     
     override func didMove(to view: SKView)
     {
-        self.physicsWorld.gravity = CGVector(dx: 0.0, dy: -5.0)
+        self.physicsWorld.gravity = CGVector(dx: 0.0, dy: self.gravity)
+        self.physicsWorld.contactDelegate = self
         
         // MARK: - Sky Creation
         
@@ -35,7 +54,7 @@ class GameScene: SKScene
         
         // MARK: - Sky Animation
         
-        let movimientoCielo = SKAction.moveBy(x: -texturaCielo.size().width, y: 0.0, duration: TimeInterval(0.05 * texturaCielo.size().width))
+        let movimientoCielo = SKAction.moveBy(x: -texturaCielo.size().width, y: 0.0, duration: TimeInterval(self.actualizacionCielo * texturaCielo.size().width))
         
         let resetCielo = SKAction.moveBy(x: texturaCielo.size().width, y: 0.0, duration: 0.0)
         
@@ -52,7 +71,7 @@ class GameScene: SKScene
             
             self.fraccionCielo.run(movimientoCieloCntinuo)
             
-            self.addChild(fraccionCielo)
+            self.movimiento.addChild(fraccionCielo)
         }
         
         colorCielo = SKColor(red: 125.0/255.0, green: 195.0/255.0, blue: 207.0/255.0, alpha: 1.0)
@@ -65,7 +84,7 @@ class GameScene: SKScene
         
         // MARK: - Ground Animation
         
-        let movimientoSuelo = SKAction.moveBy(x: -texturaSuelo.size().width, y: 0.0, duration: TimeInterval(0.015 * texturaSuelo.size().width))
+        let movimientoSuelo = SKAction.moveBy(x: -texturaSuelo.size().width, y: 0.0, duration: TimeInterval(self.actualizacionSuelo * texturaSuelo.size().width))
         
         let resetSuelo = SKAction.moveBy(x: texturaSuelo.size().width, y: 0.0, duration: 0.0)
         
@@ -82,8 +101,18 @@ class GameScene: SKScene
             
             self.fraccionSuelo.run(movimientoSueloCntinuo)
             
-            self.addChild(fraccionSuelo)
+            self.movimiento.addChild(fraccionSuelo)
         }
+        
+        let topeSuelo = SKNode()
+        topeSuelo.position = CGPoint(x: 0.0, y: texturaSuelo.size().height / 2.0)
+        topeSuelo.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: texturaSuelo.size().height))
+        topeSuelo.physicsBody?.isDynamic = false
+        
+        topeSuelo.physicsBody?.categoryBitMask = self.categoriaSuelo
+        topeSuelo.physicsBody?.contactTestBitMask = self.categoriaPajaro
+        
+        self.addChild(topeSuelo)
         
         // MARK: - Bird Creation
         
@@ -95,14 +124,14 @@ class GameScene: SKScene
         
         // MARK: - Bird Animation
         
-        let aleteo = SKAction.animate(with: [texturaPajaro1, texturaPajaro2], timePerFrame: TimeInterval(0.25))
+        let aleteo = SKAction.animate(with: [texturaPajaro1, texturaPajaro2], timePerFrame: TimeInterval(self.velocidadDeAleteo))
         
         let vuelo = SKAction.repeatForever(aleteo)
         
         // MARK: - Bird Placement
         
         self.pajaro = SKSpriteNode(texture: texturaPajaro1)
-        self.pajaro.position = CGPoint(x: self.frame.size.width / 2.75,
+        self.pajaro.position = CGPoint(x: self.frame.size.width / self.posicionXPajaro,
                                        y: self.frame.midY)
         
         self.pajaro.zPosition = 0
@@ -111,16 +140,13 @@ class GameScene: SKScene
         self.pajaro.physicsBody?.isDynamic = true
         self.pajaro.physicsBody?.allowsRotation = false
         
+        self.pajaro.physicsBody?.categoryBitMask = self.categoriaPajaro
+        self.pajaro.physicsBody?.collisionBitMask = self.categoriaSuelo | self.categoriaTubos
+        self.pajaro.physicsBody?.contactTestBitMask = self.categoriaSuelo | self.categoriaTubos
+        
         self.pajaro.run(vuelo)
         
         self.addChild(self.pajaro)
-        
-        let topeSuelo = SKNode()
-        topeSuelo.position = CGPoint(x: 0.0, y: texturaSuelo.size().height / 2.0)
-        topeSuelo.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: texturaSuelo.size().height))
-        topeSuelo.physicsBody?.isDynamic = false
-        
-        self.addChild(topeSuelo)
         
         self.texturaTubo1 = SKTexture(imageNamed: "tubo1")
         self.texturaTubo1.filteringMode = SKTextureFilteringMode.nearest
@@ -130,13 +156,9 @@ class GameScene: SKScene
         
         
         let distanciaMovimiento = CGFloat(self.frame.width + 2.0 * texturaTubo1.size().width)
-        let movimientoTubo = SKAction.moveBy(x: -distanciaMovimiento, y: 0.0, duration: TimeInterval(0.01 * distanciaMovimiento))
+        let movimientoTubo = SKAction.moveBy(x: -distanciaMovimiento, y: 0.0, duration: TimeInterval(self.actualizacionConjuntoTubos * distanciaMovimiento))
         let eliminarTubo = SKAction.removeFromParent()
         self.controlTubos = SKAction.sequence([movimientoTubo, eliminarTubo])
-        
-        print(self.frame.size.height)
-        
-        
         
         let crearTubo = SKAction.run({ () in self.gestionTubos()})
         let retardo = SKAction.wait(forDuration: TimeInterval(2.5))
@@ -144,44 +166,63 @@ class GameScene: SKScene
         let crearTuboTrasTubo = SKAction.repeatForever(crearSiguienteTubo)
         
         self.run(crearTuboTrasTubo)
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint)
-    {
         
+        self.movimiento.addChild(self.adminTubos)
+        
+        self.addChild(self.movimiento)
+        
+        self.puntuacion = 0
+        self.puntuacionLabel.fontName = "Arial"
+        self.puntuacionLabel.fontSize = self.fontSize
+        self.puntuacionLabel.alpha = self.fontAlpha
+        self.puntuacionLabel.position = CGPoint(x: self.frame.midX, y: (self.frame.size.height - 150))
+        self.puntuacionLabel.zPosition = 0
+        self.puntuacionLabel.text = "\(self.puntuacion)"
+        
+        self.addChild(self.puntuacionLabel)
     }
     
-    func touchMoved(toPoint pos : CGPoint)
+    //MARK: - Contact Detector
+    
+    func didBegin(_ contact: SKPhysicsContact)
     {
-        
+        if (contact.bodyA.categoryBitMask == self.categoriaAvance) || (contact.bodyB.categoryBitMask == self.categoriaAvance)
+        {
+            self.puntuacion += 1
+            self.puntuacionLabel.text = "\(self.puntuacion)"
+        }
+        else
+        {
+            if (self.movimiento.speed > 0)
+            {
+                let resetJuego = SKAction.run({ () in self.resetGame() })
+                self.movimiento.speed = 0
+                
+                let cieloRojo = SKAction.run({ () in self.ponerCieloRojo() })
+                
+                let conjuntoGameOver = SKAction.group([cieloRojo, resetJuego])
+                
+                self.run(conjuntoGameOver)
+            }
+        }
     }
     
-    func touchUp(atPoint pos : CGPoint)
-    {
-        
-    }
+    // MARK: - Touches (bird motion) detector
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
     {
-        pajaro.physicsBody?.velocity = CGVector(dx: 0.0, dy: 0.0)
-        self.pajaro.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: 6.0))
+        if (self.movimiento.speed > 0)
+        {
+            self.pajaro.physicsBody?.velocity = CGVector(dx: 0.0, dy: 0.0)
+            self.pajaro.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: self.impulsoPajaro))
+        }
+        else if (self.reset)
+        {
+            self.reiniciarEscena()
+        }
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?)
-    {
-        
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
-    {
-        
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?)
-    {
-        
-    }
+    // MARK: - Bird inclination update on flight
     
     override func update(_ currentTime: TimeInterval)
     {
@@ -211,40 +252,104 @@ class GameScene: SKScene
         }
     }
     
+    // MARK: - Pipes gorup creation
+    
     func gestionTubos()
     {
         let conjuntoTubo = SKNode()
         conjuntoTubo.position = CGPoint(x: (self.frame.size.width + texturaTubo1.size().width), y: 0.0)
         conjuntoTubo.zPosition = -90
         
-        let alturaTubo = UInt(self.frame.size.height / 3)
-        
-        let y = arc4random_uniform(397)
+        let y : UInt32 = arc4random_uniform(397)
         var valorFinal : UInt32 = 0
         
-        if y < 230
+        if (self.frame.size.height - 1104.5) > 0
         {
-            valorFinal = 168 + y
+            if y < UInt32(self.frame.size.height - 1104)
+            {
+                if y > 397 - UInt32(self.frame.size.height - 1104)
+                {
+                    valorFinal = (398 - UInt32(self.frame.size.height - 1104)) + y
+                }
+                else
+                {
+                    valorFinal = UInt32(self.frame.size.height - 1104) + y
+                }
+            }
+            else
+            {
+                valorFinal = y
+            }
         }
         else
         {
             valorFinal = y
         }
         
+        
         let tubo1 = SKSpriteNode(texture: texturaTubo1)
         tubo1.position = CGPoint(x: 0.0, y: CGFloat(valorFinal))
         tubo1.physicsBody = SKPhysicsBody(rectangleOf: tubo1.size)
         tubo1.physicsBody?.isDynamic = false
+        
+        tubo1.physicsBody?.categoryBitMask = self.categoriaTubos
+        tubo1.physicsBody?.contactTestBitMask = self.categoriaPajaro
+        
         conjuntoTubo.addChild(tubo1)
         
         let tubo2 = SKSpriteNode(texture: texturaTubo2)
         tubo2.position = CGPoint(x: 0.0, y: CGFloat(valorFinal) + tubo1.size.height + CGFloat(separacionTubos))
         tubo2.physicsBody = SKPhysicsBody(rectangleOf: tubo2.size)
         tubo2.physicsBody?.isDynamic = false
+        
+        tubo2.physicsBody?.categoryBitMask = self.categoriaTubos
+        tubo2.physicsBody?.contactTestBitMask = self.categoriaPajaro
+        
         conjuntoTubo.addChild(tubo2)
+        
+        let avanceNodo = SKNode()
+        avanceNodo.position = CGPoint(x: (tubo1.size.width + (self.pajaro.size.width / 2)), y: self.frame.midY)
+        avanceNodo.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: tubo1.size.width, height: self.frame.size.height))
+        avanceNodo.physicsBody?.isDynamic = false
+        avanceNodo.physicsBody?.categoryBitMask = self.categoriaAvance
+        avanceNodo.physicsBody?.contactTestBitMask = self.categoriaPajaro
+        
+        conjuntoTubo.addChild(avanceNodo)
         
         conjuntoTubo.run(self.controlTubos)
         
-        self.addChild(conjuntoTubo)
+        self.adminTubos.addChild(conjuntoTubo)
+    }
+    
+    // MARK: - Game Over State of Game
+    
+    func ponerCieloRojo()
+    {
+        self.backgroundColor = .red
+    }
+    
+    // MARK: - Game Reset
+    
+    func resetGame()
+    {
+        self.reset = true
+    }
+    
+    // MARK: - Scene Reset
+    
+    func reiniciarEscena()
+    {
+        self.backgroundColor = self.colorCielo
+        self.pajaro.position = CGPoint(x: self.frame.size.width / self.posicionXPajaro,
+                                       y: self.frame.midY)
+        self.pajaro.speed = 0
+        self.pajaro.zRotation = 0
+        self.puntuacion = 0
+        self.puntuacionLabel.text = "\(self.puntuacion)"
+        self.adminTubos.removeAllChildren()
+        self.movimiento.speed = 1
+        self.actualizacionCielo = 0.05
+        self.actualizacionSuelo = 0.015
+        self.actualizacionConjuntoTubos = 0.01
     }
 }
